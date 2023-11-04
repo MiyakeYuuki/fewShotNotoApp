@@ -19,7 +19,7 @@ npm install npm install @mui/material @emotion/react @emotion/styled
 
 ### 環境変数
 環境変数は.env.localに以下の変数を格納する．\
-※空文字が格納されている変数は各自の環境に合わせて設定する．\
+※空文字が格納されている変数は各自の環境に合わせて設定する．
 ```
 REACT_APP_GPTAPIKEY = ""
 REACT_APP_GPTURL="https://api.openai.com/v1/chat/completions"
