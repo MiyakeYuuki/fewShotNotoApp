@@ -3,6 +3,15 @@ import {
 } from "firebase/firestore";
 
 /**
+ * axiosデータ型
+ */
+export interface ChatResponse {
+    data: string,
+    status: number,
+    statusText: string,
+}
+
+/**
  * spotsデータ型
  */
 export interface Results {

@@ -34,15 +34,6 @@ export const pushConversation = (
     setMessage('');
 };
 
-// export const useGetKeywordsEffect = (
-//     keywords: string,
-//     setKeywords: React.Dispatch<React.SetStateAction<string>>,
-// ) => {
-//     useEffect(() => {
-//         const keywordData: String[] = await getKeywords() as String[];
-//     }, []);
-// };
-
 /**
  * 読込アニメーションの表示
  * @param loading 読込中か否か

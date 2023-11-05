@@ -1,14 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import { getKeywords } from './GetFireStoreData';
 import { systemStartContents, systemEndContents } from "./contents";
+import { ChatResponse } from "../types";
 
-const API_URL = process.env.REACT_APP_GPTURL;
-const MODEL = process.env.REACT_APP_GPTMODEL;
-const API_KEY = process.env.REACT_APP_GPTAPIKEY;
-
-interface ResponseData {
-    choices: [{ message: { content: string } }];
-}
 /**
  * 質問内容からキーワードを抽出
  * 
@@ -16,39 +10,30 @@ interface ResponseData {
  * @param conversation 前回の会話
  * @returns keywordArray キーワード配列
  */
-const getGptResponse = async (message: string, conversation: { role: string; content: string; }[], timeout: number) => {
+const getGptResponse = async (message: string, conversation: { role: string; content: string; }[]) => {
+    const url = process.env.REACT_APP_BACKEND_SERVER_URL as string;
+
     try {
         // firestoreからkeywordsを取得
         const keywordData: string[] = await getKeywords() as string[];
         const systemContents = systemStartContents + keywordData.join(',') + systemEndContents
 
         // リクエスト作成
-        let messages = [{ 'role': 'system', 'content': systemContents }];
-        messages.push(...conversation, { 'role': 'user', 'content': message });
+        const messages = [
+            { 'role': 'system', 'content': systemContents },
+            ...conversation,
+            { 'role': 'user', 'content': message },
+        ];
         console.log('messages', ...messages);
 
-        // axios.post(URL,request)をawaitする
-        const response = await axios.post(API_URL as string,
-            {
-                // モデル、詳細指定
-                'model': MODEL,
-                'max_tokens': 400,
-                'temperature': 1.0,
-                'top_p': 1,
-
-                // 質問内容
-                'messages': messages,
-            },
-            {
-                // 送信する HTTP ヘッダー(認証情報)
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
-                }
-            });
+        // バックエンドサーバーにリクエスト送信
+        const response: ChatResponse = await axios.post(
+            url,
+            { content: JSON.stringify(messages) }
+        );
 
         // 回答の取得
-        return response.data.choices[0].message.content.trim();
+        return response.data;
 
     } catch (error) {
         console.error(error);

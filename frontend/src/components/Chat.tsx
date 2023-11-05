@@ -26,7 +26,6 @@ const App: React.FC = () => {
     const [startChat, setStartChat] = useState<boolean>(false);     // チャット開始フラグ
     const [restartChat, setRestartChat] = useState<boolean>(false); // チャット再スタートフラグ
     const maxMessageLength: number = 50;                            // 質問の最大入力文字数
-    // const keywords: String = "Aquarium,Boyfriend,Cafes,Date,Enjoyment,Family,Fashionable,Gifts,Instagrammable,Interaction,Kids,Leisure,Onsen,Scenery,Sea";
     useLoadingEffect(loading, setLoading);
 
     /**
@@ -42,7 +41,7 @@ const App: React.FC = () => {
 
         // ChatGPTから回答取得
         const message = ''; // 空の質問を設定
-        const responseText = await getTestResponse(message, conversation);
+        const responseText = await getGptResponse(message, conversation) as string;
 
         // 会話の保存
         pushConversation(responseText, message, conversation, setConversation, setMessage);
@@ -81,7 +80,7 @@ const App: React.FC = () => {
         let responseText: string = "";
         try {
             // ChatGPTから回答取得
-            responseText = await getTestResponse(message, conversation);
+            responseText = await getGptResponse(message, conversation) as string;
             if (responseText == null) {
                 throw new Error();
             }

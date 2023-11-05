@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+openai = "*"
+python-dotenv = "*"
+
+[dev-packages]
+black = "*"
+flake8 = "*"
+pyproject-flake8 = "*"
+isort = {extras = ["pyproject"], version = "*"}
+mypy = "*"
+
+[requires]
+python_version = "3.11"
+python_full_version = "3.11.2"
