@@ -1,7 +1,7 @@
 import React, { useState, FormEvent, useRef } from 'react';
-import getGptResponse, { getTestResponse } from '../api/ChatApi';
+import { getGptResponse, getTestResponse, getCategoryFC, startFetchingCategoryFC } from '../controller/ChatController';
 import { pushConversation as pushConversation, useLoadingEffect, extractCategoryFromConversation } from './ChatUtil';
-import { getSpots } from '../api/GetFireStoreData';
+import { getSpots } from '../controller/GetFireStoreData';
 import ChatMemo from './ChatMemo';
 import { Results } from "../types";
 import {
@@ -11,8 +11,6 @@ import {
 } from "@mui/material";
 import { MyButton, MyCard, MyDivContainer, MyCardHeader } from './../styles/Styles';
 import ReactLoading from "react-loading";
-import { chatCompletionRequest } from "../api/chatCompletionRequest";
-import { CompletionAPIResponse, FunctionObject } from "../types";
 import { Conversation } from '../conversation';
 
 const App: React.FC = () => {
@@ -41,7 +39,39 @@ const App: React.FC = () => {
 
         // ChatGPTから回答取得
         const message = ''; // 空の質問を設定
-        const responseText = await getGptResponse(message, conversation) as string;
+        let responseText: string = "";
+        // try {
+        //     // ChatGPTから回答取得
+        //     responseText = await getGptResponse(message, conversation) as string;
+        //     if (responseText == null) {
+        //         throw new Error();
+        //     }
+        //     console.log("回答：", responseText);
+        //     // 会話を保存
+        //     pushConversation(responseText, message, conversation, setConversation, setMessage);
+        // } catch (error) {
+        //     alert("ネットワークエラーが発生しました。再度時間を空けてお試しください。" + error);
+        //     alert("チャット開始画面に戻ります。");
+        //     setLoading(false);
+        //     setStartChat(false);
+        //     return;
+        // }
+        // Function Calling呼び出し
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 1500)); // 1.5秒待つ
+            const response = await startFetchingCategoryFC("aaaaa");
+            console.log("リクエスト終了");
+            if (response == null) {
+                throw new Error();
+            }
+            console.log("FC回答：", response['response']);
+        } catch (error) {
+            alert("ネットワークエラーが発生しました。再度時間を空けてお試しください。" + error);
+            alert("チャット開始画面に戻ります。");
+            setLoading(false);
+            setStartChat(false);
+            return false;
+        }
 
         // 会話の保存
         pushConversation(responseText, message, conversation, setConversation, setMessage);
@@ -80,7 +110,7 @@ const App: React.FC = () => {
         let responseText: string = "";
         try {
             // ChatGPTから回答取得
-            responseText = await getGptResponse(message, conversation) as string;
+            responseText = await getTestResponse(message, conversation) as string;
             if (responseText == null) {
                 throw new Error();
             }
@@ -94,12 +124,23 @@ const App: React.FC = () => {
             setStartChat(false);
             return;
         }
-        // FunctionCalling
-        // await new Promise((resolve) => setTimeout(resolve, 1500)); // 1.5秒待つ
-        // const response: CompletionAPIResponse = await chatCompletionRequest(
-        //     [{ 'role': 'user', 'content': responseText }]
-        // );
-        // console.log(response.choices[0]);
+
+        // Function Calling呼び出し
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 1500)); // 1.5秒待つ
+            const response = await startFetchingCategoryFC("test");
+            if (response == null) {
+                throw new Error();
+            }
+            console.log("FC回答：", response);
+        } catch (error) {
+            alert("ネットワークエラーが発生しました。再度時間を空けてお試しください。" + error);
+            alert("チャット開始画面に戻ります。");
+            setLoading(false);
+            setStartChat(false);
+            return;
+        }
+
         // 最終的な出力かチェック
         if (responseText.indexOf('あなたの会話からおすすめの観光スポットのカテゴリを絞り込みました') !== -1) {
             try {

@@ -5,7 +5,7 @@ import {
 /**
  * axiosデータ型
  */
-export interface ChatResponse {
+export interface AxiosResponse {
     data: string,
     status: number,
     statusText: string,
@@ -58,21 +58,19 @@ export type FunctionObject = {
     function_call?: string;
 };
 
-export type CompletionAPIResponse = {
-    id: string;
-    object: string;
-    created: number;
-    model: string;
-    choices: {
-        index: number;
-        message: {
-            role: Role;
-            content: null | string;
-            function_call: {
-                name: string;
-                arguments: string;
-            };
+export type FCResponse = {
+    index: number;
+    message: {
+        role: Role;
+        content: null | string;
+        function_call: {
+            name: string;
+            arguments: string;
         };
-        finish_reason: "function_call" | "stop";
-    }[];
+    };
+    finish_reason: "function_call" | "stop";
 };
+
+export type MyError = {
+    name: string;
+}
