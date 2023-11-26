@@ -67,21 +67,14 @@ async def chat_api(input: ChatInput):
 getCategoryFunctions = [
     {
         "name": "get_category",
-        "description": "文章からユーザーが求める観光のカテゴリが絞り込めたか判断し，カテゴリを抽出する関数\
-        絞りこめたかどうかは「あなたの会話からカテゴリを抽出しました」など完了の会話が含まれている場合\
-        また、文章の中にSceneryやSeafoodなどのカテゴリーが含まれている場合\
-        文章の中にある複数のカテゴリ(英語)をカンマ区切り(String,String,String,...)で出力する\
-        出力は英語で，カテゴリのみを出力し、次のフォーマットに従う：[ String,String,String,...]",
+        "description": "文章からユーザーが求める観光のカテゴリが絞り込めたか判断し，カテゴリを抽出する関数",
         "parameters": {
             "type": "object",
             "properties": {
-                "category": {
-                    "type": "string",
-                    "descriptio": "カテゴリ",
+                "category": {"type": "array", "items": {"type": "string"}}
                 },
-            },
             "required": ["category"]
-        }
+        },
     }
 ]
 @router.post("/func")
@@ -90,7 +83,9 @@ async def chat_api(input: FuncCallingInput):
     print("Input:", input.content)
 
     # ChatGPTAPIに送信するリクエスト作成
-    userMessage = "以下の文章がカテゴリを抽出しているか判断してください。\
+    userMessage = "以下の文章においてカテゴリを抽出できている('function_call')か判断してください。\
+    カテゴリが抽出できている('function_call')かは、「カテゴリを抽出しました」などの文言が含まれている場合です。\
+    「～を選んでいただけますか？」、「どのような場所に行きたいですか？」、「どのカテゴリが気になりますか？」などの文言が含まれている場合は'stop'と判断してください。\
     \n```\n" + input.content + "\n```"
     contents = [{"role": "user", "content": userMessage}]
     try:

@@ -113,6 +113,7 @@ export const getSpots = async (keywords: string[]) => {
     } catch (error) {
         // エラーハンドリング
         console.error("データの取得中にエラーが発生しました", error);
+        return null;
     }
 
 

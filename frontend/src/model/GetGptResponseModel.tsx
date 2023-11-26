@@ -20,7 +20,7 @@ export const feachGptResponse = async (
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ content: messages, keyword: keywordData }),
+            body: JSON.stringify({ conversation: messages, keyword: keywordData }),
         };
 
         // バックエンドサーバーにリクエスト送信
@@ -52,6 +52,7 @@ export const feachGptResponse = async (
  */
 export const fetchExtractingCategory = async (message: string) => {
     console.log('▼----- Start GetGptResponseModel fetchExtractingCategory -----▼');
+    console.log('Input', message);
 
     try {
         // postで送るデータ

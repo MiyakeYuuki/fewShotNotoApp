@@ -1,6 +1,6 @@
 import React, { useState, FormEvent, useRef } from 'react';
-import { getGptResponse, getTestResponse, getCategoryFC } from '../controller/ChatController';
-import { pushConversation as pushConversation, useLoadingEffect, extractCategoryFromConversation } from './ChatUtil';
+import { getGptResponse, getCategoryFC } from '../controller/ChatController';
+import { pushConversation as pushConversation, useLoadingEffect, ArrayToLowerCase } from './ChatUtil';
 import { getSpots } from '../model/GetFirestoreModel';
 import ChatMemo from './ChatMemo';
 import { Results } from "../types";
@@ -41,7 +41,7 @@ const App: React.FC = () => {
         let responseText: string | null = "";
         try {
             // ChatGPTから回答取得
-            responseText = await getTestResponse(message, conversation);
+            responseText = await getGptResponse(message, conversation);
             if (responseText == null) {
                 throw new Error();
             }
@@ -53,21 +53,6 @@ const App: React.FC = () => {
             setLoading(false);
             setStartChat(false);
             return;
-        }
-
-        // Function Calling呼び出し
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // 1秒待つ
-            const response = await getCategoryFC(responseText);
-            if (response == null) {
-                throw new Error();
-            }
-        } catch (error) {
-            alert("ネットワークエラーが発生しました。再度時間を空けてお試しください。" + error);
-            alert("チャット開始画面に戻ります。");
-            setLoading(false);
-            setStartChat(false);
-            return false;
         }
 
         // 会話の保存
@@ -104,6 +89,8 @@ const App: React.FC = () => {
         // ローディング中チェック
         if (loading) return;
         setLoading(true);
+
+        // チャットを読み込み
         let responseText: string | null = "";
         try {
             // ChatGPTから回答取得
@@ -121,47 +108,40 @@ const App: React.FC = () => {
             return;
         }
 
-        // Function Calling呼び出し
-        // try {
-        //     await new Promise((resolve) => setTimeout(resolve, 1000)); // 1秒待つ
-        //     const response = await getCategoryFC(responseText);
-        //     if (response == null) {
-        //         throw new Error();
-        //     }
-        // } catch (error) {
-        //     alert("ネットワークエラーが発生しました。再度時間を空けてお試しください。" + error);
-        //     alert("チャット開始画面に戻ります。");
-        //     setLoading(false);
-        //     setStartChat(false);
-        //     return false;
-        // }
+        // Function Calling呼び出し(チャットの往復が3回以上の場合のみ)
+        let response: string[] | string | null | undefined = '';
+        if (conversation.length >= 5) {
+            try {
+                await new Promise((resolve) => setTimeout(resolve, 1000)); // 1秒待つ
+                response = await getCategoryFC(responseText);
+                if (response == null) {
+                    throw new Error();
+                }
+            } catch (error) {
+                alert("ネットワークエラーが発生しました。再度時間を空けてお試しください。" + error);
+                alert("チャット開始画面に戻ります。");
+                setLoading(false);
+                setStartChat(false);
+                return false;
+            }
+        }
+
 
         // 最終的な出力かチェック
-        if (responseText.indexOf('あなたの会話からおすすめの観光スポットのカテゴリを絞り込みました') !== -1) {
+        if (response !== 'stop' && typeof response === 'object') {
             try {
                 // ChatGPTの回答を配列にパージ
-                const purgeMessage: {
-                    'beforeJson': string,
-                    'jsonObject': string[],
-                    'afterJson': string,
-                } | null = extractCategoryFromConversation(responseText);
-
-                // パージできた場合の処理
-                if (purgeMessage) {
-                    const keywordArray: string[] = purgeMessage['jsonObject'] as string[];
-                    console.log('keywordArray', keywordArray);
-                    // keyword配列から観光地を取得
-                    const spotsArray: Results[] | undefined = await getSpots(keywordArray);
+                const keywordArray: string[] = ArrayToLowerCase(response);
+                console.log('keywordArray', keywordArray);
+                // keyword配列から観光地を取得
+                const spotsArray: Results[] | null = await getSpots(keywordArray as string[]);
+                if (spotsArray?.length !== 0) {
                     console.log('spotsArray', spotsArray);
                     setSpots(spotsArray as Results[]);
-                    responseText = purgeMessage['beforeJson'] + purgeMessage['afterJson'];
                     // チャットを終了する
                     setAnswer(responseText);
                     setRestartChat(true);
                     setLoading(false);
-                }
-                else {
-                    throw new Error();
                 }
 
             } catch (error) {
@@ -246,7 +226,7 @@ const App: React.FC = () => {
                                 )}
                         </MyCard>
                     )}
-
+                    {/* ローディング中 */}
                     {loading && (
                         <div style={{ display: "flex", justifyContent: "center" }}>
                             <div>
