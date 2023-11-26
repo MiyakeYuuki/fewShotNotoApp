@@ -60,7 +60,12 @@ const ChatMemo: React.FC<ChatProps> = ({ prevMessage, answer, spots }) => {
           <MyCard>
             <MyCardHeader title="Recommended spots for you" /><br />
             {spots.length === 0 ? (
-              <p>チャットからおすすめの観光地が絞りこめた場合に<br />ここに観光スポットが表示されます。</p>
+              <p>チャットからおすすめの観光地が絞りこめた場合に<br />
+                ここに観光スポットが表示されます。<br /><br />
+                チャットが進行しているのにも関わらず、<br />
+                観光スポットが表示されない場合は、<br />
+                もう少しチャットを続けてみてください。
+              </p>
             ) : (spots.map((spot) => (
               <Card key={spot.id} style={{ border: '1px solid #ccc' }}>
                 <CardContent>

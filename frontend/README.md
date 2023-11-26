@@ -17,6 +17,15 @@ npm install firebase\
 npm install npm install @mui/material @emotion/react @emotion/styled
 ```
 
+## アプリのデプロイ方法
+```
+firebase login
+npm run build
+firebase deploy
+```
+
+参考：<https://yoheiko.com/blog/post-769/>
+
 ### 環境変数
 環境変数は.env.localに以下の変数を格納する．\
 ※空文字が格納されている変数は各自の環境に合わせて設定する．\

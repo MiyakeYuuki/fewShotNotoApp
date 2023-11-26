@@ -34,8 +34,8 @@ pipenv sync
 ### アプリの実行
 
 ```
-cd backend/app
-pipenv run uvicorn main:app --reload
+cd backend
+pipenv run uvicorn src.server:app --reload
 ```
 
 ## アプリのデプロイ方法
@@ -69,7 +69,13 @@ docker push gcr.io/[PROJECT_ID]/[APP_NAME]
 ```
 アップロード完了後にWebブラウザでgoogle cloudにアクセスし，\
 以下の記事を参考にCloudRunの構築を行う．\
-<https://zenn.dev/kthrlab_blog/articles/c410050147c8c1?redirected=1>
+<https://zenn.dev/kthrlab_blog/articles/c410050147c8c1?redirected=1#cloud-run%E3%81%AE%E6%A7%8B%E7%AF%89>
+
+### PROJECT_ID
+![Alt text](projectID.png)
+
+### APP_NAME
+![Alt text](AppName.png)
 
 ## 環境変数
 

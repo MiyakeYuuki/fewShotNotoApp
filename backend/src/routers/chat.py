@@ -7,15 +7,15 @@ import asyncio
 
 router = APIRouter()
 
+# set apikey
+openai.api_key = os.environ['GPT_API_KEY']
+
 class ChatInput(BaseModel):
     conversation: List[Dict[str, str]]
     keyword: str
 
 class FuncCallingInput(BaseModel):
     content: str
-
-# set apikey
-openai.api_key = os.environ['GPT_API_KEY']
 
 # systemロールのcontents
 # あなた(ChatGPT)は優秀な石川県の能登地方の観光コンシェルジュで、ユーザーとの会話をもとにユーザーが求める観光スポットのカテゴリをJSONフォーマットで5個抽出します。
