@@ -3,15 +3,6 @@ import {
 } from "firebase/firestore";
 
 /**
- * axiosデータ型
- */
-export interface ChatResponse {
-    data: string,
-    status: number,
-    statusText: string,
-}
-
-/**
  * spotsデータ型
  */
 export interface Results {
@@ -29,41 +20,15 @@ export interface Results {
 export type Role = "system" | "user" | "assistant" | "function";
 export type Message = { role: Role; content: string; name?: string };
 
-type FunctionParameterProperty = {
-    type: string;
-    description: string;
-    enum?: string[];
-};
-
-type FunctionParameters = {
-    type: string;
-    properties: {
-        [key: string]: FunctionParameterProperty;
-    };
-    required: string[];
-};
-
 /**
- * 関数オブジェクト
+ * FunctionCallingの戻り値
  * 
- * @property name - 関数の名前
- * @property description - 関数の説明
- * @property parameters - パラメータ
- * @property function_call
+ * @property status - succes or false
+ * @property response - FunctionCallingの戻り値
  */
-export type FunctionObject = {
-    name: string;
-    description: string;
-    parameters: FunctionParameters;
-    function_call?: string;
-};
-
-export type CompletionAPIResponse = {
-    id: string;
-    object: string;
-    created: number;
-    model: string;
-    choices: {
+export type ResponseFunctionCalling = {
+    status: string,
+    response: {
         index: number;
         message: {
             role: Role;
@@ -74,5 +39,16 @@ export type CompletionAPIResponse = {
             };
         };
         finish_reason: "function_call" | "stop";
-    }[];
+    }
+};
+
+/**
+ * ChatGPTAPIの戻り値
+ * 
+ * @property status - succes or false
+ * @property response - FunctionCallingの戻り値
+ */
+export type ResponseChatGPTAPI = {
+    status: string,
+    response: string
 };

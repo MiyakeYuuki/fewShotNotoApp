@@ -56,7 +56,6 @@ export const getSpots = async (keywords: string[]) => {
                 const keywordRef = docData.keywords;
                 const id = docs.id;
 
-                // 
                 if (!uniqueResultsMap.has(id)) {
                     uniqueResultsMap.set(id, {
                         id: id,
@@ -114,6 +113,7 @@ export const getSpots = async (keywords: string[]) => {
     } catch (error) {
         // エラーハンドリング
         console.error("データの取得中にエラーが発生しました", error);
+        return null;
     }
 
 
