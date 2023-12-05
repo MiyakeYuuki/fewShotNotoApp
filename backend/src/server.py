@@ -3,12 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
 
-from routers import chat
-
-app = FastAPI()
-
 # 環境変数の読み込み
 load_dotenv()
+
+from .routers import chat
+
+app = FastAPI()
 
 # ReactのURLを記載
 origins = [os.environ['ORIGIN_URL']]
