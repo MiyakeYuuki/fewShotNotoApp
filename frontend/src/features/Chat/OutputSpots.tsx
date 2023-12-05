@@ -1,5 +1,5 @@
 import React from 'react';
-import { Results } from "../types";
+import { typeSpots } from '../../functions/FirestoreFunction';
 import {
   Button,
   Typography,
@@ -14,49 +14,26 @@ import {
   keywordButtonStyle,
   MyCardHeader,
   MyDivContainer
-} from './../styles/Styles';
+} from '../../styles/styles';
 
 // ChatMemoの引数の型定義
-interface ChatProps {
-  prevMessage: string;
-  answer: string;
-  spots: Results[];
+interface OutputSpotsProps {
+  loadingFlg: boolean,
+  startChatFlg: boolean,
+  spots: typeSpots[];
 }
 
 /**
- * Chat内容のメモ化を行いレンダー処理を軽減する
- * @param prevMessage 直前の質問
- * @param answer 回答
- * @returns 再利用後のチャット内容
+ * 観光地出力コンポーネント
+ * 
+ * @param spots 観光地
+ * @returns 観光地出力結果
  */
-const ChatMemo: React.FC<ChatProps> = ({ prevMessage, answer, spots }) => {
+const OutputSpots: React.FC<OutputSpotsProps> = ({ loadingFlg, startChatFlg, spots }) => {
   return (
-    <div>
-      <MyDivContainer>
-        <Grid container direction="column" alignItems="center">
-          {prevMessage &&
-            <MyCard >
-              <MyCardHeader title="Your Question" />
-              <p>{prevMessage}</p>
-            </MyCard>
-          }
-
-          <MyCard >
-            <MyCardHeader title="Answer" />
-            <p>{answer.split(/\n/)
-              .map((item, index) => {
-                return (
-                  <React.Fragment key={index}>
-                    {item}
-                    <br />
-                  </React.Fragment>
-                );
-              })
-            }
-            </p>
-          </MyCard>
-
-
+    <MyDivContainer>
+      <Grid container direction="column" alignItems="center">
+        {startChatFlg && !loadingFlg &&
           <MyCard>
             <MyCardHeader title="Recommended spots for you" /><br />
             {spots.length === 0 ? (
@@ -124,11 +101,10 @@ const ChatMemo: React.FC<ChatProps> = ({ prevMessage, answer, spots }) => {
             ))
             )}
           </MyCard>
-
-        </Grid>
-      </MyDivContainer>
-    </div >
+        }
+      </Grid>
+    </MyDivContainer >
   );
 };
 
-export default ChatMemo;
+export default OutputSpots;

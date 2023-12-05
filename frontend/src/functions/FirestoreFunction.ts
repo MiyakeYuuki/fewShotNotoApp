@@ -9,8 +9,21 @@ import {
     DocumentReference
 } from "firebase/firestore";
 import fireStoreDB from "../firestore";
-import { Results } from "../types";
 
+/**
+ * spotsデータ型
+ */
+export interface typeSpots {
+    id: string,
+    name: string;
+    url: string;
+    areaRef: DocumentData;
+    categoryRef: DocumentData[string];
+    keywordRef: DocumentData[string];
+    area: string;
+    category: string;
+    keyword: string;
+}
 
 /**
  * fireStoreのkeywordコレクションを取得
@@ -46,7 +59,7 @@ export const getSpots = async (keywords: string[]) => {
         // クエリの実行 -> categorySnapShotsArrayに配列でまとめる
         const keywordSnapShotsArray = await Promise.all(keywordQueries.map(q => getDocs(q)));
 
-        const uniqueResultsMap = new Map<string, Results>(); // idをキーとする一意の結果を格納するマップ
+        const uniqueResultsMap = new Map<string, typeSpots>(); // idをキーとする一意の結果を格納するマップ
 
         keywordSnapShotsArray.forEach(keywordSnapShots => {
             keywordSnapShots.docs.forEach(docs => {

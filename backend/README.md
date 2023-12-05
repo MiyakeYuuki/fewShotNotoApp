@@ -72,10 +72,10 @@ docker push gcr.io/[PROJECT_ID]/[APP_NAME]
 <https://zenn.dev/kthrlab_blog/articles/c410050147c8c1?redirected=1#cloud-run%E3%81%AE%E6%A7%8B%E7%AF%89>
 
 ### PROJECT_ID
-![Alt text](projectID.png)
+![Alt text](./img_readme/projectID.png)
 
 ### APP_NAME
-![Alt text](AppName.png)
+![Alt text](./img_readme/AppName.png)
 
 ## 環境変数
 

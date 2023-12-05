@@ -7,6 +7,8 @@ __pycache__
 .venv
 .mypy_cache
 .vscode
+./.vscode
 Pipfile.lock
 Pipfile
 .gitignore
+./img_readme
