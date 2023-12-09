@@ -1,5 +1,5 @@
 import React, { useState, FormEvent, useRef, createContext } from 'react';
-import { pushConversation, ArrayToLowerCase, getGptResponse, getCategoryFC } from './ChatUtil';
+import { pushConversation, ArrayToLowerCase, getGptResponse, getCategoryFC, getGptResponseForTheme } from './ChatUtil';
 import { getSpots, typeSpots } from '../../functions/FirestoreFunction';
 
 import InputChat, { typeMessage } from '../../features/Chat/InputChat';
@@ -40,7 +40,6 @@ const Chat: React.FC = () => {
 
         // チャット開始フラグを立てる
         setStartChatFlg(true);
-
         setLoadingFlg(true);
 
         // ChatGPTから回答取得
@@ -73,20 +72,6 @@ const Chat: React.FC = () => {
             window.location.reload();
         }
 
-        // 未入力チェック
-        if (!message) {
-            alert('メッセージがありません。');
-            return;
-        }
-
-        // 入力文字数チェック
-        if (message.length > maxMessageLength) {
-            alert(maxMessageLength + '文字以内で入力してください。');
-            return;
-        }
-
-        // ローディング中チェック
-        if (loadingFlg) return;
         setLoadingFlg(true);
 
         // ChatGPTから回答取得
@@ -132,6 +117,16 @@ const Chat: React.FC = () => {
                 if (spotsArray?.length !== 0) {
                     console.log('spotsArray', spotsArray);
                     setSpots(spotsArray as typeSpots[]);
+                    // ユーザの観光テーマを推測
+                    try {
+                        responseText = await getGptResponseForTheme(message, conversation);
+                        if (responseText == null) {
+                            throw new Error();
+                        }
+                    } catch (error) {
+                        catchNetworkError(error);
+                        return false;
+                    }
                     // チャットを終了する
                     setAnswer(responseText);
                     setRestartChat(true);
@@ -143,13 +138,13 @@ const Chat: React.FC = () => {
                     throw new Error();
                 }
             } catch (error) {
-                worningCategory();
+                warningCategory();
                 return false;
             }
         }
         // 抽出カテゴリが日本語の場合
         else if (response === 'NG') {
-            worningCategory();
+            warningCategory();
             return false;
         }
 
@@ -181,7 +176,7 @@ const Chat: React.FC = () => {
     /**
      * 不適切なカテゴリーを抽出した場合の処理
      */
-    const worningCategory = () => {
+    const warningCategory = () => {
         setLoadingFlg(false);
         alert("申し訳ございません。正常な回答が得られませんでした。質問内容を変えて再度お試しください。チャット開始画面に戻ります。");
         window.location.reload();

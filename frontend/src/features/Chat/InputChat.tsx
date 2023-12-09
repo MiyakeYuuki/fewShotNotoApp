@@ -41,6 +41,7 @@ const InputChat: React.FC<InputChatProps> = ({
     handleChatRestart,
 }) => {
     const { message, setMessage } = useContext(MessageContext);
+
     return (
         <MyDivContainer>
             <Grid container direction="column" alignItems="center">
@@ -85,7 +86,11 @@ const InputChat: React.FC<InputChatProps> = ({
                                         type="submit"
                                         color="primary"
                                         variant="contained"
-                                        disabled={loadingFlg}
+                                        disabled={
+                                            loadingFlg ||
+                                            (message.length === 0) ||
+                                            (message.length > maxMessageLength)
+                                        }
                                     >
                                         質問する
                                     </MyButton>

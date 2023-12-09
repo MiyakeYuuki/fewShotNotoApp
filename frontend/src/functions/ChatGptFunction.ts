@@ -90,6 +90,48 @@ export const feachGptResponse = async (
 }
 
 /**
+ * 会話内容からユーザーの観光テーマを推測する
+ * 
+ * @param messages 会話内容
+ * @returns レスポンス(json)
+ */
+export const feachGptResponseForTheme = async (
+    messages: { role: string; content: string; }[],
+) => {
+    console.log('▼----- Start GetGptResponseModel feachGptResponse -----▼');
+    console.log(JSON.stringify({ content: messages }));
+    try {
+        // postで送るデータ
+        const sendData: typeSendData = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ conversation: messages }),
+        };
+
+        // バックエンドサーバーにリクエスト送信
+        const response = await fetch(baseUrl + '/gpt/askfortheme', sendData);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // 回答の取得
+        console.log('▲----- Finish GetGptResponseModel feachGptResponse -----▲');
+        return await response.json();
+
+    } catch (error) {
+        console.log('▲----- Error GetGptResponseModel feachGptResponse -----▲');
+        if (error === 'AbortError') {
+            console.log('Fetch aborted');
+        } else {
+            console.error('Fetch error:', error);
+        }
+    }
+}
+
+/**
  * 会話からキーワードが抽出できたかFunctionCallingで判断
  * 
  * @param message GPTからの返答

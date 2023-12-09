@@ -14,6 +14,9 @@ class ChatInput(BaseModel):
     conversation: List[Dict[str, str]]
     keyword: str
 
+class ChatForThemeInput(BaseModel):
+    conversation: List[Dict[str, str]]
+
 class FuncCallingInput(BaseModel):
     content: str
 
@@ -79,7 +82,31 @@ async def chat_api(input: ChatInput):
     
     except asyncio.CancelledError:
         raise HTTPException(status_code=400, detail="Request cancelled by client.")
+
+systemContentsForTheme = "ユーザーとあなた(ChatGPT)の会話から、ユーザーの観光テーマを1文で教えてください。\
+    1文でテーマを表現した後に、「それでは観光を楽しんでください！」などねぎらいの言葉を加えてください。"
+
+# ChatGPTAPIへのリクエスト送信
+@router.post("/askfortheme")
+async def chat_api_for_theme(input: ChatForThemeInput):
+    # postデータの出力
+    print("conversation:", input.conversation)
+
+    # ChatGPTAPIに送信するリクエスト作成
+    messages = [{ 'role': 'system', 'content': systemContentsForTheme },*input.conversation]
+    try:
+        response = openai.ChatCompletion.create(
+            model = os.environ['GPT_MODEL'],
+            max_tokens=400,
+            temperature=0.2,
+            messages=messages,
+        )
+        print("Output:", response["choices"][0]["message"]["content"])
+        return {"status": "success", "response": response["choices"][0]["message"]["content"]}
     
+    except asyncio.CancelledError:
+        raise HTTPException(status_code=400, detail="Request cancelled by client.")
+
 # Function Calling Setting
 getCategoryFunctions = [
     {

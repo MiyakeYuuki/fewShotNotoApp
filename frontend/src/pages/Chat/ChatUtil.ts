@@ -3,7 +3,8 @@ import {
     fetchExtractingCategory,
     feachGptResponse,
     typeResponseFunctionCalling,
-    typeResponseChatGPTAPI
+    typeResponseChatGPTAPI,
+    feachGptResponseForTheme
 } from '../../functions/ChatGptFunction';
 import { isEnglish } from '../../functions/CommonFunction';
 import { typeMessage } from '../../features/Chat/InputChat';
@@ -103,6 +104,46 @@ export const getGptResponse = async (message: string, conversation: { role: stri
     } catch (error) {
         console.error(error);
         console.log('▲----- Error ChatController getGptResponse -----▲');
+        return null;
+    }
+}
+
+/**
+ * 会話内容からユーザーの観光テーマを推測する
+ * 
+ * @param message 質問
+ * @param conversation 前回の会話
+ * @returns ChatGPTからの回答
+ */
+export const getGptResponseForTheme = async (message: string, conversation: { role: string; content: string; }[]) => {
+    console.log('▼----- Start ChatController getGptResponseForTheme -----▼');
+    console.log('Input', message);
+
+    try {
+        // リクエスト作成
+        const messages = [
+            ...conversation,
+            { role: 'user', content: message },
+        ];
+
+        // ChatGPTAPIモデルの呼び出し
+        const response: typeResponseChatGPTAPI = await feachGptResponseForTheme(messages);
+
+        // 回答の出力
+        console.log('GPTレスポンス', response);
+        console.log('GPTステータス', response['status']);
+        console.log('GPT回答', response['response']);
+
+        if (response['status'] === 'success') {
+            console.log('▲----- Finish ChatController getGptResponseForTheme -----▲');
+            return response['response'];
+        } else {
+            throw new Error('ChatGPTAPIとの接続でエラーが発生しました。');
+        }
+
+    } catch (error) {
+        console.error(error);
+        console.log('▲----- Error ChatController getGptResponseForTheme -----▲');
         return null;
     }
 }
