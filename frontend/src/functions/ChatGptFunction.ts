@@ -35,7 +35,7 @@ export type typeResponseChatGPTAPI = {
 };
 
 /**
- * 
+ * バックエンドに送信するリクエスト型
  */
 type typeSendData = {
     method: string;
@@ -46,18 +46,18 @@ type typeSendData = {
 }
 
 /**
- * 質問内容からチャットを行う
+ * ユーザーの質問から回答を取得する
  * 
- * @param messages 前回の会話内容
- * @param keywordData FireStoreから得られたキーワード
- * @returns レスポンス(json)
+ * @param messages 会話内容
+ * @param keywordData 観光地に関わる全てのキーワード
+ * @returns 成功：GPTからの回答(json)、失敗：null
  */
-export const feachGptResponse = async (
+export const feachAnswerFromEndpoint = async (
     messages: { role: string; content: string; }[],
     keywordData: string
-) => {
-    console.log('▼----- Start GetGptResponseModel feachGptResponse -----▼');
-    console.log(JSON.stringify({ content: messages }));
+): Promise<typeResponseChatGPTAPI | null> => {
+    console.log('▼----- Start ChatGptFunction feachAnswerFromEndpoint -----▼');
+    console.log('Input', JSON.stringify({ content: messages }));
     try {
         // postで送るデータ
         const sendData: typeSendData = {
@@ -68,7 +68,7 @@ export const feachGptResponse = async (
             body: JSON.stringify({ conversation: messages, keyword: keywordData }),
         };
 
-        // バックエンドサーバーにリクエスト送信
+        // エンドポイントにリクエスト送信
         const response = await fetch(baseUrl + '/gpt/ask', sendData);
 
         if (!response.ok) {
@@ -76,16 +76,17 @@ export const feachGptResponse = async (
         }
 
         // 回答の取得
-        console.log('▲----- Finish GetGptResponseModel feachGptResponse -----▲');
+        console.log('▲----- Finish ChatGptFunction feachAnswerFromEndpoint -----▲');
         return await response.json();
 
     } catch (error) {
-        console.log('▲----- Error GetGptResponseModel feachGptResponse -----▲');
         if (error === 'AbortError') {
             console.log('Fetch aborted');
         } else {
             console.error('Fetch error:', error);
         }
+        console.log('▲----- Error ChatGptFunction feachAnswerFromEndpoint -----▲');
+        return null;
     }
 }
 
@@ -93,12 +94,12 @@ export const feachGptResponse = async (
  * 会話内容からユーザーの観光テーマを推測する
  * 
  * @param messages 会話内容
- * @returns レスポンス(json)
+ * @returns 成功：観光テーマ(json)、失敗：null
  */
-export const feachGptResponseForTheme = async (
+export const inferTourismThemeFromEndpoint = async (
     messages: { role: string; content: string; }[],
-) => {
-    console.log('▼----- Start GetGptResponseModel feachGptResponse -----▼');
+): Promise<typeResponseChatGPTAPI | null> => {
+    console.log('▼----- Start ChatGptFunction inferTourismThemeFromEndpoint -----▼');
     console.log(JSON.stringify({ content: messages }));
     try {
         // postで送るデータ
@@ -110,7 +111,7 @@ export const feachGptResponseForTheme = async (
             body: JSON.stringify({ conversation: messages }),
         };
 
-        // バックエンドサーバーにリクエスト送信
+        // エンドポイントにリクエスト送信
         const response = await fetch(baseUrl + '/gpt/askfortheme', sendData);
 
         if (!response.ok) {
@@ -118,27 +119,30 @@ export const feachGptResponseForTheme = async (
         }
 
         // 回答の取得
-        console.log('▲----- Finish GetGptResponseModel feachGptResponse -----▲');
+        console.log('▲----- Finish ChatGptFunction inferTourismThemeFromEndpoint -----▲');
         return await response.json();
 
     } catch (error) {
-        console.log('▲----- Error GetGptResponseModel feachGptResponse -----▲');
+        console.log('▲----- Error ChatGptFunction inferTourismThemeFromEndpoint -----▲');
         if (error === 'AbortError') {
             console.log('Fetch aborted');
         } else {
             console.error('Fetch error:', error);
         }
+        return null;
     }
 }
 
 /**
- * 会話からキーワードが抽出できたかFunctionCallingで判断
+ * 会話からキーワードが抽出できたか判断する
  * 
  * @param message GPTからの返答
- * @return カテゴリ 
+ * @return 成功：キーワード、失敗：null 
  */
-export const fetchExtractingCategory = async (message: string) => {
-    console.log('▼----- Start GetGptResponseModel fetchExtractingCategory -----▼');
+export const extractKeywordsFromEndpoint = async (
+    message: string
+): Promise<typeResponseFunctionCalling | null> => {
+    console.log('▼----- Start ChatGptFunction extractKeywordsFromEndpoint -----▼');
     console.log('Input', message);
 
     try {
@@ -151,22 +155,23 @@ export const fetchExtractingCategory = async (message: string) => {
             body: JSON.stringify({ content: message }),
         };
 
-        // FunctionCallingを呼び出し(バックエンドサーバ)
+        // FunctionCallingを呼び出し(エンドポイント)
         const response = await fetch(baseUrl + '/gpt/func', sendData);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        console.log('▲----- Finish GetGptResponseModel fetchExtractingCategory -----▲');
+        console.log('▲----- Finish ChatGptFunction extractKeywordsFromEndpoint -----▲');
         return await response.json();
 
     } catch (error) {
-        console.log('▲----- Error GetGptResponseModel fetchExtractingCategory -----▲');
+        console.log('▲----- Error ChatGptFunction extractKeywordsFromEndpoint -----▲');
         if (error === 'AbortError') {
             console.log('Fetch aborted');
         } else {
             console.error('Fetch error:', error);
         }
+        return null;
     }
 }

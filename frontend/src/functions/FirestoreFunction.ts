@@ -27,9 +27,9 @@ export interface typeSpots {
 
 /**
  * fireStoreのkeywordコレクションを取得
- * @returns keywords
+ * @returns 成功：keywords、失敗：null
  */
-export const getKeywords = async () => {
+export const fetchKeywords = async () => {
     try {
         const keywordListCollection = collection(fireStoreDB, "keywords");
         const keywordListSnapshot = await getDocs(keywordListCollection);
@@ -37,15 +37,16 @@ export const getKeywords = async () => {
         return keywords;
     } catch (error) {
         console.error('Error fetching keywords:', error);
+        return null;
     }
 };
 
 /**
  * keywordsを含む観光地を検索
  * @param keywords キーワード配列
- * @returns spots 観光地
+ * @returns 成功：観光地、失敗：null
  */
-export const getSpots = async (keywords: string[]) => {
+export const fetchSpots = async (keywords: string[]) => {
     const spotsCollection = collection(fireStoreDB, "spots");
 
     // selectedCategories要素分mapでqueryを発行
