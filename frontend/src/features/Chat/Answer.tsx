@@ -5,11 +5,7 @@ import {
     MyCardHeader,
     MyDivContainer
 } from '../../styles/styles';
-
-type AnswerProps = {
-    loadingFlg: boolean,
-    answer: string,
-}
+import { useAppState } from '../../pages/Chat/ChatProvider';
 
 /**
  * チャットからの回答出力コンポーネント
@@ -17,7 +13,9 @@ type AnswerProps = {
  * @param answer 回答
  * @returns 回答出力フィールド
  */
-const Answer: React.FC<AnswerProps> = ({ loadingFlg, answer }) => {
+const Answer: React.FC = () => {
+    const { state } = useAppState();
+    const { answer, loadingFlg } = state;
     return (
         < MyDivContainer>
             <Grid container direction="column" alignItems="center">

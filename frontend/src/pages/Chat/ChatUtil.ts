@@ -1,160 +1,192 @@
-import { getKeywords } from '../../functions/FirestoreFunction';
 import {
-    fetchExtractingCategory,
-    feachGptResponse,
+    extractKeywordsFromEndpoint,
+    feachAnswerFromEndpoint,
     typeResponseFunctionCalling,
-    typeResponseChatGPTAPI
+    typeResponseChatGPTAPI,
+    inferTourismThemeFromEndpoint
 } from '../../functions/ChatGptFunction';
 import { isEnglish } from '../../functions/CommonFunction';
 import { typeMessage } from '../../features/Chat/InputChat';
 
 /**
- * チャット内容を保管し，フォームを消す
+ * 会話内容を保存
  * @param answer 回答
  * @param message 質問
  * @param conversation チャット内容
- * @param setMessage
  * @param setConversation 
  */
-export const pushConversation = (
+export const addConversation = (
     answer: string,
     message: string,
     conversation: typeMessage[],
-    setConversation: React.Dispatch<React.SetStateAction<typeMessage[]>>,
-    setMessage: React.Dispatch<React.SetStateAction<string>>,
+    setConversation: React.Dispatch<typeMessage[]>,
 ) => {
     const newConversation = message ?
-        [{
-            role: 'user',
-            content: message,
-        },
-        {
-            role: 'assistant',
-            content: answer,
-        }]
+        [{ role: 'user', content: message },
+        { role: 'assistant', content: answer }]
         :
-        [{
-            role: 'assistant',
-            content: answer,
-        }];
+        [{ role: 'assistant', content: answer, }];
     setConversation([...conversation, ...newConversation]);
-    setMessage('');
 };
 
 /**
- * FunctionCallingから得られたカテゴリを配列に変換する
- * @param response ChatGPTからの回答
- * @returns string配列
+ * 文字列配列の中身をローワーケースに変換する
+ * @param stringArray 文字列配列
+ * @returns ローワーケースの文字列配列
  */
-export const ArrayToLowerCase = ((FCResponse: string[]): string[] => {
-    console.log('▼----- Start ChatUtil parseFCResponse -----▼');
-    console.log('Input', FCResponse);
+export const ArrayToLowerCase = ((stringArray: string[]): string[] => {
+    console.log('▼----- Start ChatUtil ArrayToLowerCase -----▼');
+    console.log('Input', stringArray);
     try {
-        // 配列を小文字に変換
-        const stringArray: string[] = FCResponse.map(item => item.toLowerCase());
-        console.log('Category', stringArray);
-        console.log('▲----- Finish ChatController getGptResponse -----▲');
-        return stringArray;
+        // 配列の中身をローワーケースに変換
+        const LowerCaseStringArray: string[] = stringArray.map(item => item.toLowerCase());
+        console.log('Keywords', LowerCaseStringArray);
+        console.log('▲----- Finish ChatUtil ArrayToLowerCase -----▲');
+        return LowerCaseStringArray;
     }
     catch (error) {
         console.error(error);
-        console.log('▲----- Error ChatUtil parseFCResponse -----▲');
+        console.log('▲----- Error ChatUtil ArrayToLowerCase -----▲');
         throw error;
     }
 
 });
 
 /**
- * 質問内容からチャットを行う
+ * ユーザーの質問から回答を取得する
  * 
- * @param message 質問
+ * @param message ユーザーからの質問
  * @param conversation 前回の会話
- * @returns ChatGPTからの回答
+ * @param keywordData 観光地に関わる全てのキーワード
+ * @returns 回答
  */
-export const getGptResponse = async (message: string, conversation: { role: string; content: string; }[]) => {
-    console.log('▼----- Start ChatController getGptResponse -----▼');
-    console.log('Input', message);
-
+export const fetchAnswer = async (
+    message: string,
+    conversation: typeMessage[],
+    keywordData: string[],
+): Promise<string | null> => {
+    console.log('▼----- Start ChatUtil fetchAnswer -----▼');
+    // リクエスト作成
+    const messages = [
+        ...conversation,
+        { role: 'user', content: message },
+    ];
+    console.log('Input', messages);
     try {
-        // firestoreからkeywordsを取得
-        const keywordData: string[] = await getKeywords() as string[];
+        // 回答の取得
+        const response: typeResponseChatGPTAPI | null = await feachAnswerFromEndpoint(messages, keywordData.join(','));
 
-        // リクエスト作成
-        const messages = [
-            ...conversation,
-            { role: 'user', content: message },
-        ];
-
-        // ChatGPTAPIモデルの呼び出し
-        const response: typeResponseChatGPTAPI = await feachGptResponse(messages, keywordData.join(','));
-
-        // 回答の出力
-        console.log('GPTレスポンス', response);
-        console.log('GPTステータス', response['status']);
-        console.log('GPT回答', response['response']);
-
-        if (response['status'] === 'success') {
-            console.log('▲----- Finish ChatController getGptResponse -----▲');
+        if (response !== null && response['status'] === 'success') {
+            // 回答の出力
+            console.log('レスポンス', response);
+            console.log('ステータス', response['status']);
+            console.log('回答', response['response']);
+            console.log('▲----- Finish ChatUtil fetchAnswer -----▲');
             return response['response'];
         } else {
-            throw new Error('ChatGPTAPIとの接続でエラーが発生しました。');
+            throw new Error('エンドポイントとの接続でエラーが発生しました。');
         }
 
     } catch (error) {
         console.error(error);
-        console.log('▲----- Error ChatController getGptResponse -----▲');
+        console.log('▲----- Error ChatUtil fetchAnswer -----▲');
         return null;
     }
 }
 
 /**
- * カテゴリが抽出できたか判断
+ * 会話内容からユーザーの観光テーマを推測する
  * 
- * @param message - GPTからの回答
- * @return カテゴリが抽出できた場合：array、カテゴリが抽出できなかった場合：'stop'、抽出したカテゴリが日本語の場合：'NG'、エラー：null
+ * @param message 質問
+ * @param conversation 前回の会話
+ * @returns ユーザーの観光テーマ
  */
-export const getCategoryFC = async (message: string) => {
+export const inferTourismTheme = async (
+    message: string,
+    conversation: typeMessage[],
+    responseText: string,
+): Promise<string | null> => {
+    console.log('▼----- Start ChatUtil inferTourismTheme -----▼');
+    // リクエスト作成
+    const messages = [
+        ...conversation,
+        { role: 'user', content: message },
+        { role: 'assistant', content: responseText },
+    ];
+    console.log('Input', messages);
+
     try {
-        console.log('▼----- Start ChatController getCategoryFC -----▼');
-        console.log('Input', message);
+        // 観光のテーマ取得
+        const response: typeResponseChatGPTAPI | null = await inferTourismThemeFromEndpoint(messages);
 
-        // Function Callingの呼び出し
-        const response: typeResponseFunctionCalling = await fetchExtractingCategory(message);
-
-        // 回答の出力
-        console.log('FCレスポンス', response);
-        console.log('FCステータス', response['status']);
-        console.log('FC回答1', response['response']['finish_reason']);
-
-        if (response['status'] === 'success' && response !== undefined) {
-            // カテゴリが抽出できた場合
-            if (response['response']['finish_reason'] === 'function_call') {
-                const FCcontents = response['response']['message']['function_call']['arguments'];
-                const category = JSON.parse(FCcontents)['category'];
-                console.log('カテゴリ：', category);
-
-                // カテゴリの中身がすべて英語の場合
-                if (isEnglish(category) && category.length !== 0) {
-                    console.log('▲----- Finish ChatController getCategoryFC return Json -----▲');
-                    return JSON.parse(FCcontents)['category'] as string[];
-                }
-                // カテゴリの中身が英語以外の場合
-                else {
-                    console.log('▲----- Finish ChatController getCategoryFC return stop -----▲');
-                    return 'NG';
-                }
-            }
-            // カテゴリが抽出できなかった場合
-            else if (response['response']['finish_reason'] === 'stop') {
-                console.log('▲----- Finish ChatController getCategoryFC return stop -----▲');
-                return 'stop';
-            }
+        if (response !== null && response['status'] === 'success') {
+            // 回答の出力
+            console.log('レスポンス', response);
+            console.log('ステータス', response['status']);
+            console.log('ユーザーの観光テーマ', response['response']);
+            console.log('▲----- Finish ChatUtil inferTourismTheme -----▲');
+            return response['response'];
         } else {
-            throw new Error('FunctionCallingでエラーが発生しました。');
+            throw new Error('エンドポイントとの接続でエラーが発生しました。');
+        }
+
+    } catch (error) {
+        console.error(error);
+        console.log('▲----- Error ChatUtil inferTourismTheme -----▲');
+        return null;
+    }
+}
+
+/**
+ * キーワードが抽出できたか判断
+ * 
+ * @param gptAnswer - GPTからの回答
+ * @return キーワードが抽出できた場合：string[]、キーワードが抽出できなかった場合：'stop'、抽出したキーワードが日本語の場合：'NG'、エラー：null
+ */
+export const extractKeywords = async (
+    gptAnswer: string
+): Promise<string[] | "NG" | "stop" | null> => {
+
+    console.log('▼----- Start ChatUtil extractKeywords -----▼');
+    console.log('Input', gptAnswer);
+    try {
+        // Function Callingの呼び出し
+        const response: typeResponseFunctionCalling | null = await extractKeywordsFromEndpoint(gptAnswer);
+
+        // キーワードが抽出できた場合
+        if (response !== null && response['status'] === 'success' &&
+            response['response']['finish_reason'] === 'function_call') {
+            // 回答の出力
+            console.log('レスポンス', response);
+            console.log('ステータス', response['status']);
+            console.log('回答', response['response']['finish_reason']);
+
+            const contents = response['response']['message']['function_call']['arguments'];
+            const keywords = JSON.parse(contents)['keywords'];
+            console.log('キーワード：', keywords);
+
+            // キーワードの中身がすべて英語の場合
+            if (isEnglish(keywords) && keywords.length !== 0) {
+                console.log('▲----- Finish ChatUtil extractKeywords return Json -----▲');
+                return JSON.parse(contents)['keywords'] as string[];
+            }
+            // キーワードの中身が英語以外の場合
+            else {
+                console.log('▲----- Finish ChatUtil extractKeywords return NG -----▲');
+                return 'NG';
+            }
+        }
+        // キーワードが抽出できなかった場合
+        else if (response !== null && response['response']['finish_reason'] === 'stop') {
+            console.log('▲----- Finish ChatUtil extractKeywords return stop -----▲');
+            return 'stop';
+        }
+        else {
+            throw new Error('エンドポイントとの接続でエラーが発生しました。');
         }
     } catch (error) {
         console.error(error);
-        console.log('▲----- Error ChatController getCategoryFC -----▲');
+        console.log('▲----- Error ChatUtil extractKeywords -----▲');
         return null;
     }
 };

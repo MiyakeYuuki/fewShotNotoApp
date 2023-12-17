@@ -1,5 +1,4 @@
 import React from 'react';
-import { typeSpots } from '../../functions/FirestoreFunction';
 import {
   Button,
   Typography,
@@ -15,13 +14,7 @@ import {
   MyCardHeader,
   MyDivContainer
 } from '../../styles/styles';
-
-// ChatMemoの引数の型定義
-interface OutputSpotsProps {
-  loadingFlg: boolean,
-  startChatFlg: boolean,
-  spots: typeSpots[];
-}
+import { useAppState } from '../../pages/Chat/ChatProvider';
 
 /**
  * 観光地出力コンポーネント
@@ -29,7 +22,9 @@ interface OutputSpotsProps {
  * @param spots 観光地
  * @returns 観光地出力結果
  */
-const OutputSpots: React.FC<OutputSpotsProps> = ({ loadingFlg, startChatFlg, spots }) => {
+const OutputSpots: React.FC = () => {
+  const { state } = useAppState();
+  const { spots, loadingFlg, startChatFlg } = state;
   return (
     <MyDivContainer>
       <Grid container direction="column" alignItems="center">

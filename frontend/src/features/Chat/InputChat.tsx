@@ -1,46 +1,38 @@
-import React, { FormEventHandler, useContext } from "react";
+import React, { FormEventHandler } from "react";
 import { TextField } from "@mui/material";
 import { MyCard, MyDivContainer, MyCardHeader, MyButton } from '../../styles/styles';
 import {
     CardActions,
     Grid,
 } from "@mui/material";
-import { MessageContext } from "../../pages/Chat/Chat";
+import { useAppState } from '../../pages/Chat/ChatProvider';
+import { maxMessageLength } from '../../pages/Chat/constans';
 
 export type typeMessage = { role: string; content: string; name?: string };
 
 type InputChatProps = {
-    loadingFlg: boolean,
-    startChatFlg: boolean,
-    restartChatFlg: boolean,
-    maxMessageLength: number,
     handleStartChat: FormEventHandler<HTMLFormElement>,
     handleSubmit: FormEventHandler<HTMLFormElement>,
-    handleChatRestart: FormEventHandler<HTMLFormElement>,
+    handleRestartChat: FormEventHandler<HTMLFormElement>,
 }
 
 /**
  * チャット入力コンポーネント
  * 
- * @param loadingFlg  ローディングフラグ
- * @param startChatFlg チャット開始フラグ
- * @param restartChatFlg チャット再スタートフラグ
- * @param maxMessageLength 入力文字数上限
  * @param handleStartChat
  * @param handleSubmit
  * @param handleChatRestart
  * @return チャット入力フィールド
  */
 const InputChat: React.FC<InputChatProps> = ({
-    loadingFlg,
-    startChatFlg,
-    restartChatFlg,
-    maxMessageLength,
     handleStartChat,
     handleSubmit,
-    handleChatRestart,
+    handleRestartChat,
 }) => {
-    const { message, setMessage } = useContext(MessageContext);
+    const { state, dispatch } = useAppState();
+    const { message, loadingFlg, startChatFlg, restartChatFlg } = state;
+    const setMessage = (message: string) => dispatch({ type: 'setMessage', payload: message });
+
     return (
         <MyDivContainer>
             <Grid container direction="column" alignItems="center">
@@ -61,7 +53,7 @@ const InputChat: React.FC<InputChatProps> = ({
                     </MyCard>
                 ) : (
                     <MyCard>
-                        <MyCardHeader title="Enter your question" /><br />
+                        <MyCardHeader title="Input your question" /><br />
                         {!restartChatFlg ?
                             (<form onSubmit={handleSubmit}>
                                 <TextField
@@ -85,14 +77,18 @@ const InputChat: React.FC<InputChatProps> = ({
                                         type="submit"
                                         color="primary"
                                         variant="contained"
-                                        disabled={loadingFlg}
+                                        disabled={
+                                            loadingFlg ||
+                                            (message.length === 0) ||
+                                            (message.length > maxMessageLength)
+                                        }
                                     >
                                         質問する
                                     </MyButton>
                                 </CardActions>
                             </form>
                             ) : (
-                                <form onSubmit={handleChatRestart}>
+                                <form onSubmit={handleRestartChat}>
                                     <CardActions>
                                         <MyButton
                                             type="submit"
