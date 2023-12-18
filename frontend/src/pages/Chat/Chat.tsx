@@ -8,7 +8,7 @@ import {
 } from './ChatUtil';
 import { fetchSpots, typeSpots, fetchKeywords } from '../../functions/FirestoreFunction';
 import { useAppState } from './ChatProvider';
-import { maxConversationTimes, fcCallConversationTimes } from './constans';
+import { maxConversationTimes, fcCallConversationTimes } from './constants';
 
 import InputChat, { typeMessage } from '../../features/Chat/InputChat';
 import Answer from '../../features/Chat/Answer';
@@ -93,7 +93,7 @@ const Chat: React.FC = () => {
             // 1秒待つ
             await new Promise((resolve) => setTimeout(resolve, 1000));
             spotsKeywords = await extractKeywords(answerToUser);
-            if (spotsKeywords == null) {
+            if (spotsKeywords === null) {
                 catchNetworkError();
                 return false;
             }
@@ -102,7 +102,11 @@ const Chat: React.FC = () => {
         // 最終的な出力かチェック
         if (spotsKeywords !== null && typeof spotsKeywords === 'object') {
             // 取得したキーワードをローワケースに変換
-            const keywordArray: string[] = ArrayToLowerCase(spotsKeywords);
+            const keywordArray: string[] | null = ArrayToLowerCase(spotsKeywords);
+            if (keywordArray === null) {
+                warningKeywords();
+                return false;
+            }
             console.log('keywordArray', keywordArray);
 
             // キーワードから観光地を取得

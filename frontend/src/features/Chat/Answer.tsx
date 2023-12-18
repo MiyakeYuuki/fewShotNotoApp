@@ -6,6 +6,7 @@ import {
     MyDivContainer
 } from '../../styles/styles';
 import { useAppState } from '../../pages/Chat/ChatProvider';
+import AnswerText from '../../components/SplitText';
 
 /**
  * チャットからの回答出力コンポーネント
@@ -22,17 +23,7 @@ const Answer: React.FC = () => {
                 {!loadingFlg && answer &&
                     <MyCard >
                         <MyCardHeader title="Answer" />
-                        <p>{answer.split(/\n/)
-                            .map((item, index) => {
-                                return (
-                                    <React.Fragment key={index}>
-                                        {item}
-                                        <br />
-                                    </React.Fragment>
-                                );
-                            })
-                        }
-                        </p>
+                        <AnswerText displayText={answer} />
                     </MyCard>
                 }
             </Grid>
