@@ -32,9 +32,9 @@ export const addConversation = (
 /**
  * 文字列配列の中身をローワーケースに変換する
  * @param stringArray 文字列配列
- * @returns ローワーケースの文字列配列
+ * @returns 成功：ローワーケースの文字列配列、失敗：null
  */
-export const ArrayToLowerCase = ((stringArray: string[]): string[] => {
+export const ArrayToLowerCase = ((stringArray: string[]): string[] | null => {
     console.log('▼----- Start ChatUtil ArrayToLowerCase -----▼');
     console.log('Input', stringArray);
     try {
@@ -47,7 +47,7 @@ export const ArrayToLowerCase = ((stringArray: string[]): string[] => {
     catch (error) {
         console.error(error);
         console.log('▲----- Error ChatUtil ArrayToLowerCase -----▲');
-        throw error;
+        return null;
     }
 
 });
@@ -58,7 +58,7 @@ export const ArrayToLowerCase = ((stringArray: string[]): string[] => {
  * @param message ユーザーからの質問
  * @param conversation 前回の会話
  * @param keywordData 観光地に関わる全てのキーワード
- * @returns 回答
+ * @returns 成功：回答、失敗：null
  */
 export const fetchAnswer = async (
     message: string,
@@ -99,7 +99,7 @@ export const fetchAnswer = async (
  * 
  * @param message 質問
  * @param conversation 前回の会話
- * @returns ユーザーの観光テーマ
+ * @returns 成功：ユーザーの観光テーマ、失敗：null
  */
 export const inferTourismTheme = async (
     message: string,
