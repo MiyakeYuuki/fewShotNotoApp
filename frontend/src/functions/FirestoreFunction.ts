@@ -23,6 +23,7 @@ export interface typeSpots {
     area: string;
     category: string;
     keyword: string;
+    geopoint: { latitude: number; longitude: number };
 }
 
 /**
@@ -81,6 +82,7 @@ export const fetchSpots = async (keywords: string[]) => {
                         area: "",
                         category: "",
                         keyword: "",
+                        geopoint: docData.geopoint,
                     });
                 }
             });

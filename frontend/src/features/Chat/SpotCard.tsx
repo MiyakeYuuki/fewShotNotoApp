@@ -11,7 +11,7 @@ import {
     keywordButtonStyle,
 } from '../../styles/styles';
 import { typeSpots } from '../../functions/FirestoreFunction';
-
+import MapLinkButton from '../Map/MapButton';
 interface SpotCardProps {
     spot: typeSpots
 }
@@ -27,6 +27,14 @@ const SpotCard: React.FC<SpotCardProps> = ({ spot }) => {
                             {spot.name}
                         </a>
                     </strong>
+                    <MapLinkButton
+                        location={{
+                            name: spot.name,
+                            lat: spot.geopoint.latitude,
+                            lng: spot.geopoint.longitude,
+                        }}
+                        label="MAP"
+                    />
                 </Typography>
                 <div>
                     エリア：
