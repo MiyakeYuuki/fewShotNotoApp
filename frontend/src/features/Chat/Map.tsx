@@ -3,11 +3,16 @@ import { typeSpots } from "../../functions/FirestoreFunction";
 import { Card } from "@mui/material";
 import { GoogleMap, LoadScriptNext, MarkerF } from "@react-google-maps/api";
 
-// ChatMemoの引数の型定義
+/**
+ * 観光地の情報を管理するstate
+ */
 interface MapProps {
   spots: typeSpots[];
 }
 
+/**
+ * 現在地の緯度経度とエラーの状態を管理するstate
+ */
 interface LocationState {
   latitude: number | null;
   longitude: number | null;
@@ -16,8 +21,8 @@ interface LocationState {
 
 /**
  * 観光地のMAPを表示するコンポーネント
- * @param {object} spots 観光地の情報
- * @returns {TSX.Element}　観光地のMAPを表示
+ * @param {typeSpots} spots 観光地の情報
+ * @returns {ReactNode}　観光地のMAPを表示　
  */
 const Map: React.FC<MapProps> = ({ spots }) => {
   const mapRef = useRef<google.maps.Map>();
@@ -32,8 +37,9 @@ const Map: React.FC<MapProps> = ({ spots }) => {
     width: "100%",
     height: "400px",
   };
-  const defaultCenter = { lat: 36.595377, lng: 136.625576 };
+  const defaultCenter = { lat: 36.648303564849584, lng: 136.96126538496677 }; // 砺波市役所の緯度経度
   const mapApiKey = process.env.REACT_APP_GOOGLEMAP_APIKEY as string;
+  const MAP_ZOOM_LEVEL = 8;
   const handleMapLoad = (map: google.maps.Map) => {
     mapRef.current = map;
     setMapLoaded(true);
@@ -99,7 +105,7 @@ const Map: React.FC<MapProps> = ({ spots }) => {
             mapContainerStyle={mapContanerStyle}
             onLoad={handleMapLoad}
             center={defaultCenter}
-            zoom={6}
+            zoom={MAP_ZOOM_LEVEL}
           >
             {spots.map((spot) => (
               <MarkerF

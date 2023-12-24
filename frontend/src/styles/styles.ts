@@ -76,7 +76,7 @@ export const pStyle: React.CSSProperties = {
     wordWrap: 'break-word' as 'break-word', // 'break-word'型として指定
 };
 
-export const MapButton = {
+export const MapButtonStyle = {
     color: "#fff",
     backgroundColor: "#1F73E8",
     borderRadius: "4px",

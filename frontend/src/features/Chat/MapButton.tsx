@@ -1,26 +1,31 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { MapButton } from "../../styles/styles";
+import { MapButtonStyle } from "../../styles/styles";
 
+/**
+ * 観光地の情報
+ */
 interface Location {
   name: string;
   lat: number;
   lng: number;
 }
 
+/**
+ * マップリンクボタンのprops
+ */
 interface MapLinkButtonProps {
   location: Location;
   label: string;
 }
 
-
 /**
  * マップリンクボタンコンポーネント
- * @param {object} location 観光地の情報
+ * @param {Location} location 観光地の情報
  * @param {string} label ボタンのラベル
- * @returns {TSX.Element}マップリンクボタン
+ * @returns {ReactNode} マップリンクボタン
  */
-const MapLinkButton: React.FC<MapLinkButtonProps> = ({ location, label }) => {
+const MapButton: React.FC<MapLinkButtonProps> = ({ location, label }) => {
   const handleButtonClick = () => {
     const encodedName = encodeURIComponent(location.name);
     const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=${encodedName}`;
@@ -28,10 +33,10 @@ const MapLinkButton: React.FC<MapLinkButtonProps> = ({ location, label }) => {
   };
 
   return (
-    <Button onClick={handleButtonClick} style={MapButton}>
+    <Button onClick={handleButtonClick} style={MapButtonStyle}>
       {label}
     </Button>
   );
 };
 
-export default MapLinkButton;
+export default MapButton;

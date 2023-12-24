@@ -60,7 +60,6 @@ export const fetchSpots = async (keywords: string[]) => {
     try {
         // クエリの実行 -> categorySnapShotsArrayに配列でまとめる
         const keywordSnapShotsArray = await Promise.all(keywordQueries.map(q => getDocs(q)));
-
         const uniqueResultsMap = new Map<string, typeSpots>(); // idをキーとする一意の結果を格納するマップ
 
         keywordSnapShotsArray.forEach(keywordSnapShots => {
