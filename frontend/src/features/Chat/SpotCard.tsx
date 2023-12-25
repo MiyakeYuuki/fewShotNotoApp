@@ -48,7 +48,7 @@ function Item(props: BoxProps) {
 /**
  * 観光地のカードコンポーネント
  * @param {typeSpots} spot 観光地の情報
- * @returns {JSX.Element} 観光地のカード
+ * @returns {ReactNode} 観光地のカード
  */
 const SpotCard: React.FC<SpotCardProps> = ({ spot }) => {
     return (
