@@ -75,3 +75,10 @@ export const pStyle: React.CSSProperties = {
     whiteSpace: 'pre-wrap' as 'pre-wrap', // 'pre-wrap'型として指定
     wordWrap: 'break-word' as 'break-word', // 'break-word'型として指定
 };
+
+export const MapButtonStyle = {
+    color: "#fff",
+    backgroundColor: "#1F73E8",
+    borderRadius: "4px",
+    marginLeft: "14px",
+};

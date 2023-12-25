@@ -23,6 +23,7 @@ export interface typeSpots {
     area: string;
     category: string;
     keyword: string;
+    geopoint: { latitude: number; longitude: number };
 }
 
 /**
@@ -59,7 +60,6 @@ export const fetchSpots = async (keywords: string[]) => {
     try {
         // クエリの実行 -> categorySnapShotsArrayに配列でまとめる
         const keywordSnapShotsArray = await Promise.all(keywordQueries.map(q => getDocs(q)));
-
         const uniqueResultsMap = new Map<string, typeSpots>(); // idをキーとする一意の結果を格納するマップ
 
         keywordSnapShotsArray.forEach(keywordSnapShots => {
@@ -81,6 +81,7 @@ export const fetchSpots = async (keywords: string[]) => {
                         area: "",
                         category: "",
                         keyword: "",
+                        geopoint: docData.geopoint,
                     });
                 }
             });
