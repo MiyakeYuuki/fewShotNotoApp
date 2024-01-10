@@ -70,7 +70,11 @@ const Chat: React.FC = () => {
         // 最大会話数チェック
         if (conversation.length > maxConversationTimes) {
             alert("会話回数の上限に達しました。チャット開始画面に戻ります。");
-            window.location.reload();
+            // window.location.reload();
+            setAnswer("");
+            setMessage("");
+            handleRestartChat();
+            return false;
         }
         setLoadingFlg(true);
 
@@ -123,6 +127,7 @@ const Chat: React.FC = () => {
                     return false;
                 }
                 // チャットを終了する
+                prevMessageRef.current = message;
                 setAnswer(tourismTheme);
                 setRestartChat(true);
                 setLoadingFlg(false);
@@ -133,11 +138,6 @@ const Chat: React.FC = () => {
                 warningKeywords();
                 return false;
             }
-        }
-        // 抽出キーワードが日本語の場合
-        else if (spotsKeywords === 'NG') {
-            warningKeywords();
-            return false;
         }
         // キーワードが抽出できなかった場合
         else if (spotsKeywords === 'stop' || spotsKeywords === '') {
@@ -155,7 +155,13 @@ const Chat: React.FC = () => {
      * チャット再開始処理
      */
     const handleRestartChat = () => {
-        window.location.reload();
+        // window.location.reload();
+        console.log('▼----- Start handleRestartChat -----▼');
+        setStartChatFlg(false);
+        setConversation([]);
+        setAnswer("");
+        prevMessageRef.current = "";
+        console.log('▲----- Finish handleRestartChat -----▲');
     }
 
     /**
@@ -164,7 +170,14 @@ const Chat: React.FC = () => {
     const catchNetworkError = () => {
         alert("ネットワークエラーが発生しました。再度時間を空けてお試しください。");
         alert("チャット開始画面に戻ります。");
-        window.location.reload();
+        // window.location.reload();
+        console.log('▼----- Error catchNetworkError -----▼');
+        setConversation([]);
+        setAnswer("");
+        setLoadingFlg(false);
+        setStartChatFlg(false);
+        prevMessageRef.current = "";
+        console.log('▲----- Finish catchNetworkError -----▲');
     }
 
     /**
@@ -173,7 +186,13 @@ const Chat: React.FC = () => {
     const warningKeywords = () => {
         setLoadingFlg(false);
         alert("申し訳ございません。正常な回答が得られませんでした。質問内容を変えて再度お試しください。チャット開始画面に戻ります。");
-        window.location.reload();
+        // window.location.reload();
+        console.log('▼----- Error warningKeywords -----▼');
+        setConversation([]);
+        setLoadingFlg(false);
+        setStartChatFlg(false);
+        prevMessageRef.current = "";
+        console.log('▲----- Finish warningKeywords -----▲');
     }
 
     return (

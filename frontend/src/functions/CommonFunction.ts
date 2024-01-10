@@ -7,7 +7,7 @@
 export const isEnglish = (stringArray: string[]): boolean => {
     console.log('▼----- Start CommonModel isEnglish -----▼');
     console.log('Input', stringArray);
-    const englishRegex = /^[A-Za-z]+$/;
+    const englishRegex = /^[A-Za-z\s]+$/;
     console.log('▲----- Finish CommonModel isEnglish -----▲');
     return stringArray.every(element => englishRegex.test(element));
 }

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { typeSpots } from "../../functions/FirestoreFunction";
 import { Card } from "@mui/material";
 import { GoogleMap, LoadScriptNext, MarkerF } from "@react-google-maps/api";
@@ -25,7 +25,7 @@ interface LocationState {
  * @return {ReactNode}　観光地のMAPを表示　
  */
 const Map: React.FC<MapProps> = ({ spots }) => {
-	const mapRef = useRef<google.maps.Map>();
+	// const mapRef = useRef<google.maps.Map>();
 	const [location, setLocation] = useState<LocationState>({
 		latitude: null,
 		longitude: null,
@@ -35,9 +35,9 @@ const Map: React.FC<MapProps> = ({ spots }) => {
 		width: "100%",
 		height: "400px",
 	};
-	const defaultCenter = { lat: 36.648303564849584, lng: 136.96126538496677 }; // 砺波市役所の緯度経度
+	const defaultCenter = { lat: 37.18, lng: 137.0 }; // 能登地方の中心緯度経度
 	const MAP_API_KEY = process.env.REACT_APP_GOOGLEMAP_APIKEY as string;
-	const MAP_ZOOM_LEVEL = 8;
+	const MAP_ZOOM_LEVEL = 9;
 
 	//コンポーネントがマウントされた時にユーザーの位置情報を取得し、locationに格納する
 	useEffect(() => {

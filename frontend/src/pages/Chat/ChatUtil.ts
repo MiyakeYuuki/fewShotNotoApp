@@ -145,7 +145,7 @@ export const inferTourismTheme = async (
  */
 export const extractKeywords = async (
     gptAnswer: string
-): Promise<string[] | "NG" | "stop" | null> => {
+): Promise<string[] | "stop" | null> => {
 
     console.log('▼----- Start ChatUtil extractKeywords -----▼');
     console.log('Input', gptAnswer);
@@ -172,8 +172,8 @@ export const extractKeywords = async (
             }
             // キーワードの中身が英語以外の場合
             else {
-                console.log('▲----- Finish ChatUtil extractKeywords return NG -----▲');
-                return 'NG';
+                console.log('▲----- Finish ChatUtil extractKeywords return stop -----▲');
+                return 'stop';
             }
         }
         // キーワードが抽出できなかった場合
