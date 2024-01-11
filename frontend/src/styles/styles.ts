@@ -15,15 +15,15 @@ export const MyCardHeader = styled(CardHeader)(({ theme }) => ({
     textAlign: "center",
     background: "#212121",
     color: "#fff",
-    padding: theme.spacing(2),
+    padding: theme.spacing(1.2),
 }));
 
 export const MyCard = styled(Card)(({ theme }) => ({
-    width: "100%",
+    width: "90%",
     marginTop: theme.spacing(5),
-    maxWidth: 400,
     margin: "0 auto",
-    padding: theme.spacing(2),
+    maxWidth: 700,
+    padding: theme.spacing(1.5),
     border: "1px solid #ccc",
 }));
 

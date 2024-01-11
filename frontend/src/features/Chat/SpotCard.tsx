@@ -52,7 +52,7 @@ function Item(props: BoxProps) {
  */
 const SpotCard: React.FC<SpotCardProps> = ({ spot }) => {
     return (
-        <Card key={spot.id} style={{ border: '1px solid #ccc' }}>
+        <Card key={spot.id} style={{ border: '1px solid #ccc', padding: 0 }}>
             <CardContent>
                 <Box sx={{
                     display: 'flex',

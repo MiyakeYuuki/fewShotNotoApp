@@ -33,7 +33,7 @@ const OutputSpots: React.FC = () => {
 			<Grid container direction="column" alignItems="center">
 				{startChatFlg && !loadingFlg &&
 					<MyCard>
-						<MyCardHeader title="Recommended spots for you" /><br />
+						<MyCardHeader title="Recommended spots" /><br />
 						{spots.length === 0 ? (
 							<TextWithoutSpots />
 						) : (
@@ -49,13 +49,13 @@ const OutputSpots: React.FC = () => {
 										<Tab label="MAP" value={"1"} />
 									</TabList>
 								</AppBar>
-								<TabPanel value={"0"}>
+								<TabPanel value={"0"} style={{ margin: '-15px' }}>
 									{spots.map((spot) => (
 										<SpotCard key={spot.id} spot={spot} />
 									))}
 
 								</TabPanel>
-								<TabPanel value={"1"}>
+								<TabPanel value={"1"} style={{ margin: '-15px' }}>
 									<Map spots={spots} />
 								</TabPanel>
 							</TabContext>
