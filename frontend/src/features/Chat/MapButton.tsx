@@ -28,7 +28,7 @@ interface MapLinkButtonProps {
 const MapButton: React.FC<MapLinkButtonProps> = ({ location, label }) => {
 	const handleButtonClick = () => {
 		const encodedName = encodeURIComponent(location.name);
-		const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=${encodedName}`;
+		const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodedName}`;
 		window.open(googleMapsUrl, "_blank");
 	};
 

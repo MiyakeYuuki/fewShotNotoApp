@@ -112,7 +112,7 @@ const Map: React.FC<MapProps> = ({ spots }) => {
 								<div>
 									<h3>{selectedSpot.name}</h3>
 									<p>
-										<a href={`https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=${encodedName}`} target="_blank" rel="noopener noreferrer">
+										<a href={`https://www.google.com/maps/dir/?api=1&destination=${encodedName}`} target="_blank" rel="noopener noreferrer">
 											道案内を開く
 										</a>
 									</p>
