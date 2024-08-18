@@ -134,7 +134,7 @@ async def chat_api(input: FuncCallingInput):
     contents = [{"role": "user", "content": userMessage}]
     try:
         response = openai.ChatCompletion.create(
-            model = "gpt-3.5-turbo-0613",
+            model = os.environ['GPT_MODEL'],
             messages = contents,
             functions = fetchKeywordsFunctions
         )
